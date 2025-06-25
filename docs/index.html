@@ -8,30 +8,36 @@
 <body>
     <h1>Welcome to the Simple WASM Web App</h1>
     <button id="callFunction">Call C++ Function</button>
+    <button id="greetBtn">Greet</button>
+    <input id="greetName" placeholder="Enter your name">
+    <button id="calcBtn">Calculator Demo</button>
     <p id="result"></p>
 
     <script src="main.js"></script>
     <script>
-      // Wait for the WASM module to be ready
-      if (typeof createModule !== "undefined") {
-        createModule().then(Module => {
-          document.getElementById('callFunction').onclick = function() {
-            const sum = Module.add(5, 3);
-            const diff = Module.subtract(10, 4);
-            document.getElementById('result').textContent =
-              `add(5, 3) = ${sum}, subtract(10, 4) = ${diff}`;
-          };
-        });
-      } else if (typeof Module !== "undefined") {
-        Module.onRuntimeInitialized = function() {
-          document.getElementById('callFunction').onclick = function() {
-            const sum = Module.add(5, 3);
-            const diff = Module.subtract(10, 4);
-            document.getElementById('result').textContent =
-              `add(5, 3) = ${sum}, subtract(10, 4) = ${diff}`;
-          };
+      createModule().then(Module => {
+        document.getElementById('callFunction').onclick = function() {
+          const sum = Module.add(5, 3);
+          const diff = Module.subtract(10, 4);
+          document.getElementById('result').textContent =
+            `add(5, 3) = ${sum}, subtract(10, 4) = ${diff}`;
         };
-      }
+
+        document.getElementById('greetBtn').onclick = function() {
+          const name = document.getElementById('greetName').value || "World";
+          const greeting = Module.greet(name);
+          document.getElementById('result').textContent = greeting;
+        };
+
+        document.getElementById('calcBtn').onclick = function() {
+          const calc = new Module.Calculator(10);
+          calc.add(7);
+          calc.subtract(3);
+          document.getElementById('result').textContent =
+            `Calculator value (start at 10, +7, -3): ${calc.getValue()}`;
+          calc.delete(); // Clean up!
+        };
+      });
     </script>
 </body>
 </html>

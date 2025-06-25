@@ -11,5 +11,27 @@
     <p id="result"></p>
 
     <script src="main.js"></script>
+    <script>
+      // Wait for the WASM module to be ready
+      if (typeof createModule !== "undefined") {
+        createModule().then(Module => {
+          document.getElementById('callFunction').onclick = function() {
+            const sum = Module.add(5, 3);
+            const diff = Module.subtract(10, 4);
+            document.getElementById('result').textContent =
+              `add(5, 3) = ${sum}, subtract(10, 4) = ${diff}`;
+          };
+        });
+      } else if (typeof Module !== "undefined") {
+        Module.onRuntimeInitialized = function() {
+          document.getElementById('callFunction').onclick = function() {
+            const sum = Module.add(5, 3);
+            const diff = Module.subtract(10, 4);
+            document.getElementById('result').textContent =
+              `add(5, 3) = ${sum}, subtract(10, 4) = ${diff}`;
+          };
+        };
+      }
+    </script>
 </body>
 </html>
